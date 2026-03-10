@@ -5,16 +5,14 @@
 
 import { watch, type Ref } from 'vue'
 import { formatCode } from '@/utils/formatter'
-import { useSettingsStore } from '@/store/settings'
-import { storeToRefs } from 'pinia'
+import { useAutoFormatSettings } from '@/composables/useAutoFormat'
 
 /**
  * 自动格式化Composable
  * 根据设置自动格式化输入的代码
  */
 export function useAutoFormat() {
-    const settingsStore = useSettingsStore()
-    const { autoFormat } = storeToRefs(settingsStore)
+    const { autoFormat } = useAutoFormatSettings()
 
     /** 源文本格式化定时器 */
     let sourceTimer: ReturnType<typeof setTimeout> | null = null

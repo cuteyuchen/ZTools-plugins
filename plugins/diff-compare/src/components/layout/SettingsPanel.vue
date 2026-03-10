@@ -7,13 +7,11 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ZSelect from '@/components/ui/ZSelect.vue'
-import { useSettingsStore } from '@/store/settings'
-import { storeToRefs } from 'pinia'
 import ZIcon from '@/components/ui/ZIcon.vue'
+import { useAutoFormatSettings } from '@/composables/useAutoFormat'
 
 const { locale, t } = useI18n()
-const settingsStore = useSettingsStore()
-const { autoFormat } = storeToRefs(settingsStore)
+const { autoFormat, setAutoFormat } = useAutoFormatSettings()
 
 /**
  * 关闭面板事件
@@ -94,7 +92,7 @@ const usageItems = computed(() => {
 
 const autoFormatValue = computed({
     get: () => autoFormat.value ? 'true' : 'false',
-    set: (v) => { autoFormat.value = v === 'true' }
+    set: (v) => { setAutoFormat(v === 'true') }
 })
 
 const formatOptions = computed(() => [
@@ -154,7 +152,7 @@ const formatOptions = computed(() => [
                             <!-- Text Compare -->
                             <div class="sp-guide-item">
                                 <div class="sp-guide-icon-wrap sp-guide-icon-wrap--blue">
-                                    <Icon name="text" :size="15" />
+                                    <ZIcon name="text" :size="15" />
                                 </div>
                                 <div class="sp-guide-text">
                                     <p class="sp-guide-title">{{ usageItems[0].title }}</p>
@@ -165,7 +163,7 @@ const formatOptions = computed(() => [
                             <!-- Image Compare -->
                             <div class="sp-guide-item">
                                 <div class="sp-guide-icon-wrap sp-guide-icon-wrap--purple">
-                                    <Icon name="image" :size="15" />
+                                    <ZIcon name="image" :size="15" />
                                 </div>
                                 <div class="sp-guide-text">
                                     <p class="sp-guide-title">{{ usageItems[1].title }}</p>
@@ -176,7 +174,7 @@ const formatOptions = computed(() => [
                             <!-- Theme -->
                             <div class="sp-guide-item">
                                 <div class="sp-guide-icon-wrap sp-guide-icon-wrap--amber">
-                                    <Icon name="moon" :size="15" />
+                                    <ZIcon name="moon" :size="15" />
                                 </div>
                                 <div class="sp-guide-text">
                                     <p class="sp-guide-title">{{ usageItems[2].title }}</p>
@@ -187,7 +185,7 @@ const formatOptions = computed(() => [
                             <!-- Language -->
                             <div class="sp-guide-item">
                                 <div class="sp-guide-icon-wrap sp-guide-icon-wrap--green">
-                                    <Icon name="globe" :size="15" />
+                                    <ZIcon name="globe" :size="15" />
                                 </div>
                                 <div class="sp-guide-text">
                                     <p class="sp-guide-title">{{ usageItems[3].title }}</p>

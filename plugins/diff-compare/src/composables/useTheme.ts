@@ -16,6 +16,8 @@ declare global {
     }
 }
 
+const STORAGE_KEY = "theme-mode"
+
 /**
  * 主题模式类型
  */
@@ -64,10 +66,10 @@ export function useTheme() {
      */
     const setThemeMode = (mode: ThemeMode) => {
         themeMode.value = mode
-        if(window.ztools?.dbStorage?.setItem){
-            window.ztools.dbStorage.setItem('theme-mode', mode)
-        }else{
-            localStorage.setItem('theme-mode', mode)
+        if (window.ztools?.dbStorage?.setItem) {
+            window.ztools.dbStorage.setItem(STORAGE_KEY, mode)
+        } else {
+            localStorage.setItem(STORAGE_KEY, mode)
         }
         updateTheme()
     }
@@ -88,7 +90,7 @@ export function useTheme() {
      * 从存储中读取保存的主题设置并应用
      */
     const initTheme = () => {
-        const saved = window.ztools?.dbStorage?.getItem('theme-mode') as ThemeMode | null ?? localStorage.getItem('theme-mode') as ThemeMode | null
+        const saved = window.ztools?.dbStorage?.getItem(STORAGE_KEY) as ThemeMode | null ?? localStorage.getItem(STORAGE_KEY) as ThemeMode | null
         if (saved && ['system', 'light', 'dark'].includes(saved)) {
             themeMode.value = saved
         }
