@@ -12,6 +12,10 @@ declare global {
     interface Window {
         ztools?: {
             isDarkColors?: () => boolean
+            dbStorage?: {
+                setItem?: (key: string, value: any) => void
+                getItem?: (key: string) => any
+            }
         }
     }
 }
@@ -23,17 +27,28 @@ const STORAGE_KEY = "theme-mode"
  */
 export type ThemeMode = 'system' | 'light' | 'dark'
 
+// 核心：单例存储变量（放在函数外部，全局唯一）
+let themeInstance: {
+    themeMode: ReturnType<typeof ref<ThemeMode>>
+    isDark: ReturnType<typeof ref<boolean>>
+    setThemeMode: (mode: ThemeMode) => void
+    cycleTheme: () => void
+    _init: () => void
+    _destroy: () => void
+} | null = null
+
 /**
- * 主题管理Composable
- * 管理应用的主题切换和系统主题检测
+ * 内部创建主题实例的核心函数（抽离逻辑，避免重复创建）
  */
-export function useTheme() {
+const createThemeInstance = () => {
     /** 当前主题模式 */
     const themeMode = ref<ThemeMode>('system')
     /** 是否为暗黑模式 */
     const isDark = ref(true)
     /** 媒体查询列表，用于监听系统主题变化 */
     let mediaQuery: MediaQueryList | null = null
+    /** 标记是否已初始化事件监听，防止重复绑定 */
+    let isInitialized = false
 
     /**
      * 获取系统主题
@@ -108,26 +123,59 @@ export function useTheme() {
     }
 
     /**
-     * 组件挂载时初始化主题并监听系统主题变化
+     * 初始化主题和事件监听（对外暴露的初始化方法）
      */
-    onMounted(() => {
+    const _init = () => {
+        if (isInitialized) return // 已初始化则跳过，防止重复绑定
         initTheme()
-
         mediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)')
         mediaQuery?.addEventListener('change', handleSystemThemeChange)
-    })
+        isInitialized = true
+    }
 
     /**
-     * 组件卸载时移除事件监听
+     * 销毁事件监听（对外暴露的销毁方法）
      */
-    onUnmounted(() => {
+    const _destroy = () => {
+        if (!isInitialized) return
         mediaQuery?.removeEventListener('change', handleSystemThemeChange)
-    })
+        isInitialized = false
+    }
 
     return {
         themeMode,
         isDark,
         setThemeMode,
-        cycleTheme
+        cycleTheme,
+        _init,
+        _destroy
+    }
+}
+
+/**
+ * 主题管理Composable（单例模式）
+ * 管理应用的主题切换和系统主题检测
+ */
+export function useTheme() {
+    // 核心：如果没有实例则创建，有则直接返回已有实例
+    if (!themeInstance) {
+        themeInstance = createThemeInstance()
+    }
+
+    // 自动初始化（兼容原有 onMounted 逻辑）
+    onMounted(() => {
+        themeInstance?._init()
+    })
+
+    // 自动销毁（全局主题建议注释，避免其他组件失效，可手动调用）
+    onUnmounted(() => {
+        // themeInstance?._destroy() 
+    })
+
+    return {
+        themeMode: themeInstance.themeMode,
+        isDark: themeInstance.isDark,
+        setThemeMode: themeInstance.setThemeMode,
+        cycleTheme: themeInstance.cycleTheme
     }
 }
