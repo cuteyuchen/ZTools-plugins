@@ -78,7 +78,7 @@ const techStack = [
                 <span class="version-badge">v1.0.0</span>
               </div>
               <p class="about-desc">
-                一款优雅而专业的代码截图工具。将您的代码片段转化为精美的设计图片，支持语法高亮与多种极客主题。
+                一款优雅而专业的代码截图工具。将您的代码片段转化为精美的设计图片，支持语法高亮与多种主题。
               </p>
             </div>
 
