@@ -48,7 +48,7 @@ function search(channel, search) {
 function launchProjectFromApp(channel, path) {
     let channel_info = initService.channels[channel];
     // 启动路径中如果包含空格则会导致 启动失败 这里使用双引号 保证启动命令解析正确
-    exec(`"${channel_info.launchCommand}" "${path}"`, (err, stdout, stderr) => {
+    exec(`"${channel_info.launchCommand}"  ${path}`, (err, stdout, stderr) => {
         console.debug({"launch app": {err, stdout, stderr}})
     });
 }
@@ -61,21 +61,20 @@ exports.features = {
             enter: (action, callbackSetList) => {
                 // 每次进入时重新扫描项目列表
                 initService.init().then(res => {
-                    let recentProjectList = search("", "")
-                    console.debug(recentProjectList)
-                    callbackSetList(recentProjectList)
+                    let recentProjectList = search("", "");
+                    console.debug(recentProjectList);
+                    callbackSetList(recentProjectList);
                 })
             },
             search: (action, searchWord, callbackSetList) => {
-                let recentProjectList = search("", searchWord)
-                console.debug(recentProjectList)
-                callbackSetList(recentProjectList)
+                let recentProjectList = search("", searchWord);
+                callbackSetList(recentProjectList);
             },
 
             select: (action, itemData, callbackSetList) => {
-                window.ztools.hideMainWindow()
+                window.ztools.hideMainWindow();
                 launchProjectFromApp(itemData.channel, itemData.path)
-                window.ztools.outPlugin()
+                window.ztools.outPlugin();
             },
             placeholder: "搜索项目（支持模糊匹配）"
         }
