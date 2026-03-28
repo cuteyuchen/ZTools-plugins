@@ -1,6 +1,7 @@
 const fs = require("fs");
 const { globalData } = require("../config/global_data");
 const { getInstalledApps } = require("../utils/getApps/index");
+const { XMLParser } = require("fast-xml-parser");
 
 /**
  * 初始化服务
@@ -46,8 +47,7 @@ class InitService {
         .filter(
           (app) => app.appIdentifier && !app.appIdentifier.startsWith("{")
         );
-      console.debug("appList:");
-      console.debug(appList);
+      console.debug("appList:", appList);
       // 找到目标应用
       let targetAppList = [];
       for (const app of appList) {
@@ -81,7 +81,7 @@ class InitService {
           dataDirectoryName = appInfoFileData.dataDirectoryName;
           launchCommand = targetApp.DisplayIcon;
           logo_path = window.ztools.getFileIcon(launchCommand);
-        } else {
+        } else if (window.ztools.isMacOS()) {
           // mac
           appName = targetApp.appName;
           installLocation = targetApp.app_dir + "/" + appName;
@@ -94,7 +94,9 @@ class InitService {
           let appInfoFileData = fs.readFileSync(appInfoFilePath);
           appInfoFileData = JSON.parse(appInfoFileData);
           dataDirectoryName = appInfoFileData.dataDirectoryName;
-          launchCommand = installLocation + "/Contents/MacOS/" +
+          launchCommand =
+            installLocation +
+            "/Contents/MacOS/" +
             appInfoFileData.launch[0].launcherPath.replace("../MacOS/", "");
           logo_path = window.ztools.getFileIcon(installLocation);
         }
@@ -116,7 +118,7 @@ class InitService {
   /**
    * 初始化项目列表
    */
-  #init_recentProjects() {
+  async #init_recentProjects() {
     console.debug("初始化最近项目列表");
     Object.keys(this.channels).forEach((displayName) => {
       let channel = this.channels[displayName];
@@ -143,51 +145,47 @@ class InitService {
         "$USER_HOME$",
         "~"
       );
-      var parser = new DOMParser();
-      var xmlDoc = parser.parseFromString(recentProjectsFileData, "text/xml");
 
-      let xml_entry = xmlDoc
-        .getElementsByName("additionalInfo")[0]
-        .getElementsByTagName("map")[0]
-        .getElementsByTagName("entry");
+      // 采用node兼容方案
+      const parser = new XMLParser({
+        ignoreAttributes: false,
+        attributeNamePrefix: "@_",
+        isArray: (name) => ["entry", "map"].includes(name)
+      });
+      const xmlDoc = parser.parse(recentProjectsFileData);
+      let xml_entry = xmlDoc.root.additionalInfo.map.entry;
 
       for (let index = 0; index < xml_entry.length; index++) {
-        let entry = xml_entry.item(index);
-
+        let entry = xml_entry[index];
+        // 属性访问：entry['@_key']，不是 getAttribute('key')
+        let entryKey = entry["@_key"];
+        let valueNode = entry.value; // 不是 getElementsByTagName("value")[0]
+        let recentProjectMetaInfo = valueNode.RecentProjectMetaInfo;
+        let optionList = recentProjectMetaInfo.option; // 直接是数组
         let activationTimestamp = 0;
         let projectOpenTimestamp = 0;
-        let optionList = entry
-          .getElementsByTagName("value")[0]
-          .getElementsByTagName("RecentProjectMetaInfo")[0]
-          .getElementsByTagName("option");
+        // 遍历 option 数组
         for (let i = 0; i < optionList.length; i++) {
-          let option = optionList.item(i);
-          let atr_name = option.getAttribute("name");
-          let atr_value = option.getAttribute("value");
-          if (atr_name === "activationTimestamp") {
-            activationTimestamp = atr_value;
-          } else if (atr_name === "projectOpenTimestamp") {
-            projectOpenTimestamp = atr_value;
+          let option = optionList[i];
+          // 选项属性用 @_ 前缀
+          let optName = option["@_name"];
+          let optValue = option["@_value"];
+          if (optName === "activationTimestamp") {
+            activationTimestamp = optValue;
+          } else if (optName === "projectOpenTimestamp") {
+            projectOpenTimestamp = optValue;
           }
         }
-
-        if (
-          window.ztools.isWindows() &&
-          entry.getAttribute("key").startsWith("~")
-        ) {
-          entry.setAttribute(
-            "key",
-            entry
-              .getAttribute("key")
-              .replace("~", window.ztools.getPath("home"))
-          );
+        // 修改属性：直接赋值，不是 setAttribute
+        if (window.ztools.isWindows() && entryKey.startsWith("~")) {
+          entryKey = entryKey.replace("~", window.ztools.getPath("home"));
+          entry["@_key"] = entryKey;
         }
-
         recentProjectList[index] = {
           channel: displayName,
           icon: channel.logo_path,
-          path: entry.getAttribute("key"),
-          name: require("path").basename(entry.getAttribute("key")),
+          path: entryKey,
+          name: require("path").basename(entryKey),
           activationTimestamp: activationTimestamp,
           projectOpenTimestamp: projectOpenTimestamp
         };
