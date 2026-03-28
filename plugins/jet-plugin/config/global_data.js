@@ -1,6 +1,6 @@
 /**
  * 全局配置
- * @type {{STATE_JSON: string, WINDOWS_TOOLBOX_CONFIG_PATH: string, default_placeholder: string, MACOS_TOOLBOX_CONFIG_PATH: string, config_path: string}}
+ * @type {{STATE_JSON: string, config_path: string, default_placeholder: string, OS: string}}
  */
 class GlobalData {
     // 最终使用的config path

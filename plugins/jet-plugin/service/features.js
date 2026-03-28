@@ -12,32 +12,19 @@ function search(channel, search) {
 
     // 获取列表
     let recentProjectList = [];
-    switch (channel) {
-        case "IntelliJ IDEA Ultimate":
-        case "DataGrip":
-        case "Writerside":
-            recentProjectList = initService.recentProjects[channel]
-            break
-        default:
-            // all
-            Object.keys(initService.recentProjects).forEach(key => {
-                initService.recentProjects[key].forEach(item => {
-                    recentProjectList.push(item)
-                })
-            })
+    if (channel && initService.recentProjects[channel]) {
+        recentProjectList = initService.recentProjects[channel];
+    } else {
+        // all 全部软件
+        recentProjectList = Object.values(initService.recentProjects).flat();
     }
     console.debug("recentProjectList", recentProjectList)
 
     // 查询对应数据
     if (search && search !== '') {
-        let tmpRecentProjectList = []
-        for (let i = 0; i < recentProjectList.length; i++) {
-            let item = recentProjectList[i];
-            if (item.name.toLowerCase().indexOf(search.toLowerCase()) > -1) {
-                tmpRecentProjectList.push(item)
-            }
-        }
-        recentProjectList = tmpRecentProjectList;
+        recentProjectList = recentProjectList.filter(item =>
+            item.name.toLowerCase().includes(search.toLowerCase())
+        );
     }
 
     // 排序
@@ -61,7 +48,7 @@ function search(channel, search) {
 function launchProjectFromApp(channel, path) {
     let channel_info = initService.channels[channel];
     // 启动路径中如果包含空格则会导致 启动失败 这里使用双引号 保证启动命令解析正确
-    exec(`"${channel_info.launchCommand}"` + " " + path, (err, stdout, stderr) => {
+    exec(`"${channel_info.launchCommand}" "${path}"`, (err, stdout, stderr) => {
         console.debug({"launch app": {err, stdout, stderr}})
     });
 }

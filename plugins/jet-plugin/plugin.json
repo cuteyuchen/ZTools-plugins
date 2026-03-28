@@ -11,14 +11,14 @@
     {
       "code": "all",
       "explain": "快速打开 jetbrains IDE 全家桶项目",
-      "logo": "./logo.png",
       "cmds": [
         "IDE",
         "JetBrains",
         "History",
         "KK",
         "JetHistory",
-        "JJ"
+        "JJ",
+        "JH"
       ]
     }
   ]

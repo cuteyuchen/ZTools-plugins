@@ -58,9 +58,9 @@ function getInstalledApps() {
             ...HKLM_SOFTWARE_Wow6432Node_Microsoft,
             ...HKCU_SOFTWARE_Microsoft,
             ...HKCU_SOFTWARE_Wow6432Node_Microsoft,
-        ].filter((o) => {
+        ].filter((app) => {
             return {
-                "app":o.appName,
+                "app":app.appName,
                 // todo
                 "dir":""
             }

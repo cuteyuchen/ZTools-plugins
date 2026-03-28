@@ -27,7 +27,7 @@ async function getInternalMacInstalledApps () {
 	}
 
 	let system_application_arr = []
-	if (fs.existsSync("/Applications")) {
+	if (fs.existsSync("/System/Applications")) {
 		system_application_arr = await (0, mac_1.getInstalledApps)("/System/Applications");
 		system_application_arr.forEach(item => {
 			item['app_dir'] = "/System/Applications"

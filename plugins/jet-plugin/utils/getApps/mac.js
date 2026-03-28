@@ -57,7 +57,7 @@ exports.getInstalledApps = getInstalledApps;
  */
 function getDirectoryContents (directory) {
 	return new Promise((resolve, reject) => {
-		(0, child_process_1.exec)(`ls ${directory}`, (error, stdout) => {
+		(0, child_process_1.exec)(`ls "${directory}"`, (error, stdout) => {
 			if (error) {
 				reject(error);
 			} else {
