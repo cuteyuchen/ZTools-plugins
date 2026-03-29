@@ -57,10 +57,17 @@
             padding: 0 20px;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: space-between;
             background: transparent;
             border-bottom: 1px solid var(--border-color);
             gap: 12px;
+        }
+
+        .header-tip {
+            font-size: 12px;
+            opacity: 0.7;
+            font-weight: 500;
+            letter-spacing: 0.3px;
         }
 
         .btn-group {
@@ -132,14 +139,7 @@
             align-items: center;
             justify-content: space-between;
             overflow: hidden;
-        }
-
-        .card:not(.pinned) {
-            cursor: move;
-        }
-
-        .card.pinned {
-            cursor: default;
+            cursor: pointer;
         }
 
         .card:hover {
@@ -218,7 +218,6 @@
         .code-display {
             display: flex;
             align-items: center;
-            cursor: pointer;
         }
 
         .code-text {
@@ -260,11 +259,11 @@
 
         .modal-content {
             background: var(--modal-bg);
-            padding: 32px;
+            padding: 24px 20px;
             border-radius: 16px;
-            width: 90%;
-            max-width: 420px;
-            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+            width: 360px;
+            max-width: 90vw;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
             border: 1px solid var(--border-color);
         }
 
@@ -318,6 +317,10 @@
             background-color: rgba(128, 128, 128, 0.12);
         }
 
+        .settings-select span {
+            font-weight: 700;
+        }
+
         .settings-select .arrow {
             transition: transform 0.3s;
         }
@@ -354,6 +357,14 @@
             }
         }
 
+        .select-menu.up {
+            top: auto;
+            bottom: calc(100% + 5px);
+            margin-top: 0;
+            box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.2);
+            transform-origin: bottom;
+        }
+
         .select-item {
             padding: 8px 12px;
             font-size: 14px;
@@ -369,6 +380,10 @@
             justify-content: space-between;
         }
 
+        .select-item span {
+            font-weight: 700;
+        }
+
         .select-item:hover {
             background: var(--menu-hover);
         }
@@ -378,31 +393,68 @@
             background: rgba(128, 128, 128, 0.05);
         }
 
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
         .form-item {
-            margin-bottom: 24px;
+            margin-bottom: 12px;
+        }
+
+        .form-item.full-width {
+            grid-column: span 2;
         }
 
         .form-item label {
             display: block;
-            margin-bottom: 10px;
-            font-size: 14px;
-            font-weight: 500;
+            margin-bottom: 6px;
+            margin-left: 12px;
+            font-size: 13px;
+            font-weight: 700;
         }
 
         .form-item input {
             width: 100%;
-            padding: 12px;
+            padding: 10px 12px;
             box-sizing: border-box;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             background: rgba(128, 128, 128, 0.05);
             color: var(--text-color);
             font-size: 15px;
+            font-weight: 700;
             outline: none;
         }
 
         .form-item input:focus {
             border-color: var(--primary-color);
+        }
+
+        .form-input-container {
+            position: relative;
+        }
+
+        .form-input-container .error-tip {
+            position: absolute;
+            top: 50%;
+            left: 12px;
+            transform: translateY(-50%);
+            color: #f25656;
+            font-weight: 700;
+            font-size: 14px;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-input-container .error-tip.show {
+            opacity: 1;
+        }
+
+        .form-item input.error-active {
+            color: transparent !important;
         }
 
         .modal-actions {
@@ -443,10 +495,39 @@
         }
 
         .modal-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 24px;
+            margin-bottom: 18px;
             text-align: left;
+        }
+
+        .timer-container .refresh-btn {
+            cursor: pointer;
+            width: 40px !important;
+            height: 40px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            transition: all 0.2s;
+            background: transparent;
+        }
+
+        .timer-container .refresh-btn:not(.cooling):hover {
+            background: rgba(128, 128, 128, 0.15);
+            transform: rotate(45deg);
+        }
+
+        .timer-container .refresh-btn:not(.cooling):active {
+            transform: rotate(180deg) scale(0.9);
+        }
+
+        .timer-container .refresh-btn.cooling {
+            opacity: 0.3 !important;
+            filter: grayscale(1) !important;
+            cursor: default !important;
+            pointer-events: none !important;
+            transform: none !important;
         }
 
         .about-section {
@@ -461,6 +542,22 @@
             color: var(--primary-color);
             margin-bottom: 4px;
             display: block;
+        }
+
+        .copy-icon {
+            animation: scale-in 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes scale-in {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .about-link {
@@ -511,6 +608,7 @@
 <body @click="hideContextMenu">
     <div id="app" v-cloak>
         <div class="header">
+            <div class="header-tip">左键输入 | Shift+左键复制 | 右键修改</div>
             <div class="btn-group">
                 <button class="btn btn-secondary" @click="showAbout = true"><span class="btn-text">关于</span></button>
                 <button class="btn btn-secondary" @click="showSettings = true"><span class="btn-text">设置</span></button>
@@ -522,10 +620,15 @@
             <div v-if="accounts.length === 0" class="empty-tip">暂无账号。</div>
             <transition-group name="list" tag="div" class="list-container">
                 <div class="card" v-for="(acc, index) in accounts" :key="acc.id"
-                    :class="{ pinned: acc.pinned, dragging: isDragging && dragIndex === index, 'low-time': timeLeft <= 5 }"
+                    :class="{ 
+                        pinned: acc.pinned, 
+                        dragging: isDragging && dragIndex === index, 
+                        'low-time': (acc.type || 'totp') === 'totp' && getAccountTimeLeft(acc) <= 5 
+                    }"
                     :draggable="!acc.pinned" @dragstart="handleDragStart(index, $event)"
                     @dragover.prevent="handleDragOver(index, $event)" @dragend="handleDragEnd"
-                    @drop="handleDrop(index, $event)" @contextmenu.prevent="showContextMenu(acc, $event)">
+                    @drop="handleDrop(index, $event)" @contextmenu.prevent="showContextMenu(acc, $event)"
+                    @click="copyCode(acc, $event)">
 
                     <div v-if="acc.pinned" class="pin-indicator"></div>
 
@@ -533,26 +636,43 @@
                         <div class="card-header">
                             <div class="card-title">{{ acc.name }}</div>
                         </div>
-                        <div class="code-display" @click="copyCode(acc)">
+                        <div class="code-display">
                             <div class="code-text">{{ getFormattedToken(acc.id) }}</div>
                         </div>
                     </div>
 
-                    <!-- 环形进度条 -->
-                    <div class="timer-container" v-if="config.timerStyle === 'circle'">
-                        <svg width="40" height="40" viewBox="0 0 40 40">
-                            <circle cx="20" cy="20" r="18" fill="none" stroke="var(--border-color)" :stroke-width="4.5">
-                            </circle>
-                            <circle class="timer-circle" cx="20" cy="20" r="18" fill="none" :stroke-width="4.5"
-                                :stroke-dasharray="113.1" :stroke-dashoffset="113.1 * (1 - timeLeft / 30)"
-                                transform="rotate(-90 20 20)"
-                                style="transition: stroke-dashoffset 1s linear, stroke 5s ease;"></circle>
-                        </svg>
+                    <!-- 环形进度条/复制成功反馈/HOTP 刷新 -->
+                    <div class="timer-container" v-if="(config.timerStyle === 'circle' && (acc.type || 'totp') === 'totp') || copiedId === acc.id || (acc.type || 'totp') === 'hotp'">
+                        <transition name="modal-fade" mode="out-in">
+                            <div :key="copiedId === acc.id ? 'check' : ((acc.type || 'totp') === 'hotp' ? 'refresh' : 'timer')">
+                                <svg v-if="copiedId === acc.id" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                                    stroke="#4caf50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                                    class="copy-icon">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <div v-else-if="(acc.type || 'totp') === 'hotp'" class="refresh-btn" 
+                                    :class="{ cooling: acc._lastRefresh && currentTime * 1000 - acc._lastRefresh < 5000 }"
+                                    @click.stop="refreshHOTP(acc)">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                                    </svg>
+                                </div>
+                                <svg v-else-if="(acc.type || 'totp') === 'totp'" width="40" height="40" viewBox="0 0 40 40">
+                                    <circle cx="20" cy="20" r="18" fill="none" stroke="var(--border-color)"
+                                        :stroke-width="4.5">
+                                    </circle>
+                                    <circle class="timer-circle" cx="20" cy="20" r="18" fill="none" :stroke-width="4.5"
+                                        :stroke-dasharray="113.1" :stroke-dashoffset="113.1 * (1 - getAccountTimeLeft(acc) / (acc.period || 30))"
+                                        transform="rotate(-90 20 20)"
+                                        style="transition: stroke-dashoffset 1s linear, stroke 5s ease;"></circle>
+                                </svg>
+                            </div>
+                        </transition>
                     </div>
 
                     <!-- 条形进度条 -->
-                    <div class="progress-bar-container" v-if="config.timerStyle === 'bar'">
-                        <div class="progress-bar" :style="{ width: (timeLeft / 30 * 100) + '%' }"></div>
+                    <div class="progress-bar-container" v-if="config.timerStyle === 'bar' && (acc.type || 'totp') === 'totp'">
+                        <div class="progress-bar" :style="{ width: (getAccountTimeLeft(acc) / (acc.period || 30) * 100) + '%' }"></div>
                     </div>
                 </div>
             </transition-group>
@@ -607,15 +727,135 @@
             <div class="modal-overlay" v-if="showModal" @click.self="showModal = false">
                 <div class="modal-content">
                     <h3 class="modal-title">{{ modalTitle }}</h3>
-                    <div class="form-item">
-                        <label>账号名称</label>
-                        <input type="text" v-model="modalForm.name" placeholder="例如: Github"
-                            :class="{ 'shake-it': nameError }" @input="nameError = false" ref="nameInput">
-                    </div>
-                    <div class="form-item">
-                        <label>密钥 (Secret)</label>
-                        <input type="text" v-model="modalForm.secret" placeholder="请输入密钥"
-                            :class="{ 'shake-it': secretError }" @input="secretError = false">
+                    <div class="form-row">
+                        <div class="form-item full-width">
+                            <label>账号名称</label>
+                            <input type="text" v-model="modalForm.name" placeholder="例如: Github"
+                                :class="{ 'shake-it': nameError }" @input="nameError = false" ref="nameInput">
+                        </div>
+                        <div class="form-item full-width">
+                            <label>密钥 (Secret)</label>
+                            <div class="form-input-container">
+                                <input type="text" v-model="modalForm.secret" placeholder="请输入密钥"
+                                    :class="{ 'shake-it': secretError, 'error-active': secretError }"
+                                    @input="modalForm.secret = modalForm.secret.toUpperCase().replace(/\s/g, ''); secretError = false">
+                                <div class="error-tip" :class="{ show: secretError }">密钥不合法</div>
+                            </div>
+                        </div>
+
+                        <!-- 类型与算法 -->
+                        <div class="form-item">
+                            <label>类型</label>
+                            <div class="settings-select" :class="{ open: activeModalDropdown === 'type' }"
+                                @click.stop="activeModalDropdown = activeModalDropdown === 'type' ? null : 'type'">
+                                <span>{{ modalForm.type.toUpperCase() }}</span>
+                                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                                <div class="select-menu up" v-if="activeModalDropdown === 'type'">
+                                    <div class="select-item" :class="{active: modalForm.type === 'totp'}"
+                                        @click.stop="modalForm.type = 'totp'; activeModalDropdown = null">
+                                        <span>TOTP</span>
+                                        <svg v-if="modalForm.type === 'totp'" width="12" height="12" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="select-item" :class="{active: modalForm.type === 'hotp'}"
+                                        @click.stop="modalForm.type = 'hotp'; activeModalDropdown = null">
+                                        <span>HOTP</span>
+                                        <svg v-if="modalForm.type === 'hotp'" width="12" height="12" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            <label>算法</label>
+                            <div class="settings-select" :class="{ open: activeModalDropdown === 'algo' }"
+                                @click.stop="activeModalDropdown = activeModalDropdown === 'algo' ? null : 'algo'">
+                                <span>{{ modalForm.algorithm }}</span>
+                                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                                <div class="select-menu up" v-if="activeModalDropdown === 'algo'">
+                                    <div v-for="algo in ['SHA1', 'SHA256', 'SHA512']" :key="algo" class="select-item"
+                                        :class="{active: modalForm.algorithm === algo}"
+                                        @click.stop="modalForm.algorithm = algo; activeModalDropdown = null">
+                                        <span>{{ algo }}</span>
+                                        <svg v-if="modalForm.algorithm === algo" width="12" height="12"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 位数与 时间/计数 -->
+                        <div class="form-item">
+                            <label>位数</label>
+                            <div class="settings-select" :class="{ open: activeModalDropdown === 'digits' }"
+                                @click.stop="activeModalDropdown = activeModalDropdown === 'digits' ? null : 'digits'">
+                                <span>{{ modalForm.digits }}</span>
+                                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                                <div class="select-menu up" v-if="activeModalDropdown === 'digits'">
+                                    <div v-for="d in [6, 7, 8]" :key="d" class="select-item"
+                                        :class="{active: modalForm.digits === d}"
+                                        @click.stop="modalForm.digits = d; activeModalDropdown = null">
+                                        <span>{{ d }}</span>
+                                        <svg v-if="modalForm.digits === d" width="12" height="12" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-item">
+                            <label v-if="modalForm.type === 'totp'">时间间隔</label>
+                            <label v-else>计数器</label>
+
+                            <div v-if="modalForm.type === 'totp'" class="settings-select"
+                                :class="{ open: activeModalDropdown === 'period' }"
+                                @click.stop="activeModalDropdown = activeModalDropdown === 'period' ? null : 'period'">
+                                <span>{{ modalForm.period }}s</span>
+                                <svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                                <div class="select-menu up" v-if="activeModalDropdown === 'period'">
+                                    <div v-for="p in [15, 30, 60]" :key="p" class="select-item"
+                                        :class="{active: modalForm.period === p}"
+                                        @click.stop="modalForm.period = p; activeModalDropdown = null">
+                                        <span>{{ p }}s</span>
+                                        <svg v-if="modalForm.period === p" width="12" height="12" viewBox="0 0 24 24"
+                                            fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <input v-else type="number" v-model.number="modalForm.counter" placeholder="1">
+                        </div>
                     </div>
                     <div class="modal-actions">
                         <button class="btn btn-secondary" @click="showModal = false"><span
