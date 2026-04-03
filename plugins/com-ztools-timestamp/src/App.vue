@@ -19,7 +19,11 @@ const {
 
 const { theme, initTheme, toggleTheme } = useTheme()
 
-onMounted(initTheme)
+onMounted(() => {
+  initTheme()
+  // 设置插件视图高度，确保在 ZTools 主窗口中完整显示
+  window.ztools?.setExpendHeight?.(600)
+})
 
 // Toast 通知
 const toastVisible = ref(false)
