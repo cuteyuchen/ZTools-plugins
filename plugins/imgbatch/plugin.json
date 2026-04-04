@@ -1,4 +1,4 @@
-﻿{
+{
     "$schema":  "node_modules/@ztools-center/ztools-api-types/resource/ztools.schema.json",
     "name":  "imgbatch",
     "title":  "Imgbatch",
