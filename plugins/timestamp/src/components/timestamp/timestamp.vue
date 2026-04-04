@@ -31,7 +31,7 @@ const copyToClipboard = async (text: string) => {
   }
 }
 
-// 解析输入为 Date 对象
+// 解析输入为 Date 对象（日期字符串使用本地时区）
 const parsedDate = computed(() => {
   if (!inputValue.value) return null
   const trimmed = inputValue.value.trim()
@@ -40,7 +40,15 @@ const parsedDate = computed(() => {
     const num = Number(trimmed)
     return new Date(num < 1e12 ? num * 1000 : num)
   }
-  // 尝试解析为日期字符串
+  // 尝试解析为本地时间日期字符串
+  // 支持 YYYY-MM-DD HH:mm:ss 或 YYYY-MM-DDTHH:mm:ss 格式
+  const match = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s](\d{1,2}):(\d{1,2}):(\d{1,2}))?/)
+  if (match) {
+    const [, year, month, day, hour = 0, minute = 0, second = 0] = match
+    // 使用本地时间组件创建 Date
+    return new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second))
+  }
+  // 其他格式尝试直接解析（浏览器行为不一致，但作为兜底）
   const date = new Date(trimmed)
   return isNaN(date.getTime()) ? null : date
 })
